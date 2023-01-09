@@ -1,0 +1,6 @@
+group = 'ee.ratelimiter'
+description = 'Rate Limiter APP'
+
+bootJar {
+    enabled = false
+}

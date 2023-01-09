@@ -1,0 +1,28 @@
+server:
+  port: 9090
+  servlet:
+    context-path: /
+    session:
+      timeout: 10s
+
+spring:
+  redis:
+    host: localhost
+    port: 6379
+  main:
+    banner-mode: off
+  web:
+    resources:
+      add-mappings: false
+
+in-memory-authentication:
+  enabled: true
+  users:
+    -
+      username: admin
+      email: admin@gmail.com
+      first-name: Firstname
+      last-name: Lastname
+      password: changeme
+      roles: ROLE_ADMIN,ROLE_USER
+      locked: false

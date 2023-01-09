@@ -1,0 +1,20 @@
+doctype html
+html
+    head
+        title Login Form
+    body
+        form(method="POST", action="/endpoint")
+            div Username (unrecognized users will be treated as guests)
+            input(type="text", name="username", value= username)
+            br
+            br
+            div Enter number to execute request: /endpoint/{number}
+            input(type = "number", name = "weight", min="1", value="1")
+            br
+            br
+            input(type = "submit", name = "submit", value = "submit")
+        br
+        if error
+          p(style={color: 'red'}) You have reached rate limit
+        if response
+          p(style={color: 'green'}) Server response: #{response}

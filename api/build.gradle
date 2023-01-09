@@ -1,0 +1,59 @@
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'io.spring.dependency-management'
+}
+
+group 'ee.ratelimiter'
+description = 'Rate Limiter API'
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-starter-parent:${springBootVersion}")
+    }
+}
+
+springBoot {
+	mainClass.set('com.demo.ratelimiter.RateLimiterApplication')
+}
+
+jar {
+	enabled = true
+	archiveClassifier = ''
+}
+
+bootJar {
+	doFirst {
+		manifest {
+			attributes("Implementation-SCM-Revision": "git rev-parse HEAD".execute().text.trim())
+			attributes("Implementation-Version": archiveVersion)
+		}
+	}
+}
+
+compileJava.dependsOn(processResources)
+
+springBoot {
+	buildInfo()
+}
+
+dependencies {
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+	implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+	implementation 'com.github.houbb:redis-client-jedis:0.0.3'
+	//implementation "org.springframework.session:spring-session-data-redis"
+	implementation ("org.springframework.boot:spring-boot-starter-data-redis") {
+		exclude group: 'io.lettuce.lettuce-core'
+	}
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+}

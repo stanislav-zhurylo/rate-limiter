@@ -1,0 +1,4 @@
+rootProject.name = 'rate-limiter'
+
+include ':api'
+include ':app'

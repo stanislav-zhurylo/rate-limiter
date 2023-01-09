@@ -1,0 +1,122 @@
+buildscript {
+    ext {
+        springBootVersion = '2.7.5'
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:5.1.1"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'maven-publish'
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+}
+
+group = 'ee.ratelimiter'
+description = 'Rate Limiter'
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-starter-parent:${springBootVersion}")
+    }
+}
+
+dependencies {
+    implementation project(":api")
+    implementation project(":app")
+}
+
+allprojects {
+    if (it.name != ':app') {
+
+        apply plugin: 'java'
+        apply plugin: 'idea'
+        apply plugin: 'maven-publish'
+        apply plugin: 'org.springframework.boot'
+
+        repositories {
+            mavenCentral()
+        }
+
+        artifacts {
+            archives jar
+        }
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifact jar
+                }
+            }
+        }
+
+        tasks.withType(JavaCompile) {
+            options.compilerArgs += ['-Xlint:all,-processing', '-Werror']
+            options.deprecation = true
+            options.encoding = "UTF-8"
+        }
+
+        ext {
+            assertJVersion = '3.23.1'
+            jacksonVersion = '2.13.3'
+            lombokVersion = '1.18.24'
+            commonsLangVersion = '3.12.0'
+        }
+
+    }
+}
+
+subprojects {
+    if (it.name != ':app') {
+        apply plugin: "com.diffplug.spotless"
+
+        spotless {
+            java {
+                googleJavaFormat()
+            }
+        }
+        
+        compileJava.dependsOn(processResources)
+
+        configure(allprojects) {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+
+        repositories {
+            mavenLocal()
+            mavenCentral()
+        }
+
+        dependencies {
+            compileOnly "org.projectlombok:lombok:${lombokVersion}"
+            testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+            annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+            testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        }
+
+        test {
+            useJUnitPlatform()
+        }
+
+        tasks.withType(Test) {
+            reports.html.outputLocation = file("${reporting.baseDir}/${name}")
+        }
+    }
+}
+
+bootJar { enabled = false}
+
+wrapper {
+    gradleVersion = '7.4.2'
+}
+
+
+
+
+
+
